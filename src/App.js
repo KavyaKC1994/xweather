@@ -1,24 +1,25 @@
 import React, { useState } from "react";
-import axios from "axios";
 
 const XWeatherApp = () => {
   const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const API_KEY = "ef09a637d4c249d789d112307240105";
 
   const fetchWeatherData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
+      const response = await fetch(
         `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}`
       );
-      setWeatherData(response.data);
-      setError("");
+      if (!response.ok) {
+        throw new Error("Failed to fetch weather data");
+      }
+      const data = await response.json();
+      setWeatherData(data);
     } catch (error) {
-      alert("Failed to fetch weather data");
+      alert(error.message);
       setWeatherData(null);
     } finally {
       setLoading(false);
@@ -44,7 +45,6 @@ const XWeatherApp = () => {
         <button type="submit">Search</button>
       </form>
       {loading && <p>Loading data...</p>}
-      {error && <p>{error}</p>}
       {weatherData && (
         <div className="weather-cards">
           <div className="weather-card">
@@ -66,3 +66,4 @@ const XWeatherApp = () => {
 };
 
 export default XWeatherApp;
+
